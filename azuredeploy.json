@@ -1344,42 +1344,7 @@
                 }
             }
         },
-        {
-            "name": "SQL0JoinDomain",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-01-01",
-            "comments": "This deployment makes the SQL0 VM join the domain.",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/UpdateSQL0Nic"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('configuration').templateURLs.joinDomain]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "VMName": {
-                        "value": "[concat(variables('vmSettings').vmNames.sql,'0-vm')]"
-                    },
-                    "modulesURL": {
-                        "value": "[variables('configuration').modulesURLs.joinDomain]"
-                    },
-                    "configurationFunction": {
-                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
-                    },
-                    "domainName": {
-                        "value": "[parameters('domainName')]"
-                    },
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPassword": {
-                        "value": "[parameters('adminPassword')]"
-                    }
-                }
-            }
-        },
+
         {
             "name": "UpdateSQL1Nic",
             "type": "Microsoft.Resources/deployments",
@@ -1436,42 +1401,7 @@
                 }
             }
         },
-        {
-            "name": "SQL1JoinDomain",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-01-01",
-            "comments": "This deployment makes the SQL1 VM join the domain.",
-            "dependsOn": [
-                "Microsoft.Resources/deployments/UpdateSQL1Nic"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('configuration').templateURLs.joinDomain]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "VMName": {
-                        "value": "[concat(variables('vmSettings').vmNames.sql,'1-vm')]"
-                    },
-                    "modulesURL": {
-                        "value": "[variables('configuration').modulesURLs.joinDomain]"
-                    },
-                    "configurationFunction": {
-                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
-                    },
-                    "domainName": {
-                        "value": "[parameters('domainName')]"
-                    },
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPassword": {
-                        "value": "[parameters('adminPassword')]"
-                    }
-                }
-            }
-        },
+        
         {
             "name": "UpdateCRM0Nic",
             "type": "Microsoft.Resources/deployments",
