@@ -1,0 +1,36 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nicName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "ipConfigurations": {
+            "type": "array"
+        },
+        "dnsServers": {
+            "type": "array"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-06-15",
+            "name": "[parameters('nicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipConfigurations": "[parameters('ipConfigurations')]",
+                "dnsSettings": {
+                    "dnsServers": "[parameters('dnsServers')]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

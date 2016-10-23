@@ -1,0 +1,279 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "DCNicName": {
+            "type": "string"
+        },
+        "DCNicPrivateIPAddress": {
+            "type": "string"
+        },
+        "dcPubIPRef": {
+            "type": "string"
+        },
+        "exchangeNicName": {
+            "type": "string"
+        },
+        "exchangeNicPrivateIPAddress": {
+            "type": "string"
+        },
+        "exchangePubIPRef": {
+            "type": "string"
+        },
+        "crmVMName": {
+            "type": "string"
+        },
+        "staticSubnetRef": {
+            "type": "string"
+        },
+        "CRMFrontendInstancesCount": {
+            "type": "int"
+        },
+        "crm0PrivateIPAddress": {
+            "type": "string"
+        },
+        "crm1PrivateIPAddress": {
+            "type": "string"
+        },
+        "crmBackendNicPrivateIPAddress": {
+            "type": "string"
+        },
+        "crmBackendPubIPRef": {
+            "type": "string"
+        },
+        "crmLBBackendPoolRef": {
+            "type": "string"
+        },
+        "crm0LBRDPNATRef": {
+            "type": "string"
+        },
+        "crm1LBRDPNATRef": {
+            "type": "string"
+        },
+        "sqlVMName": {
+            "type": "string"
+        },
+        "SQLInstancesCount": {
+            "type": "int"
+        },
+        "sql0PrivateIPAddress": {
+            "type": "string"
+        },
+        "sql1PrivateIPAddress": {
+            "type": "string"
+        },
+        "sqlWitnessNicPrivateIPAddress": {
+            "type": "string"
+        },
+        "sqlLBBackendPoolRef": {
+            "type": "string"
+        },
+        "sqlExternalLBBackendPoolRef": {
+            "type": "string"
+        },
+        "sql0LBRDPNATRef": {
+            "type": "string"
+        },
+        "sql1LBRDPNATRef": {
+            "type": "string"
+        },
+        "sqlwLBRDPNATRef": {
+            "type": "string"
+        },
+        "sqlSubnetRef": {
+            "type": "string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('DCNicName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "DC_NIC"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('DCNicPrivateIPAddress')]",
+                            "subnet": {
+                                "id": "[parameters('staticSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[parameters('dcPubIPRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('exchangeNicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "tags": {
+                "displayName": "Exchange_NIC"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('exchangeNicPrivateIPAddress')]",
+                            "subnet": {
+                                "id": "[parameters('staticSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[parameters('exchangePubIPRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(parameters('crmVMName'),copyIndex(),'-nic')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "copy": {
+                "name": "NumberOfCrmFrontendInstances",
+                "count": "[parameters('CRMFrontendInstancesCount')]"
+            },
+            "tags": {
+                "displayName": "CRM_NIC[2]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters(concat('crm',copyIndex(),'PrivateIPAddress'))]",
+                            "subnet": {
+                                "id": "[parameters('staticSubnetRef')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[parameters('crmLBBackendPoolRef')]"
+                                }
+                            ],
+                            "loadBalancerInboundNatRules": [
+                                {
+                                    "id": "[parameters(concat('crm',copyIndex(),'LBRDPNATRef'))]"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(parameters('crmVMName'),'be-nic')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "tags": {
+                "displayName": "CRMBackend_NIC"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('crmBackendNicPrivateIPAddress')]",
+                            "subnet": {
+                                "id": "[parameters('staticSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[parameters('crmBackendPubIPRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(parameters('sqlVMName'),copyIndex(),'-nic')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "copy": {
+                "name": "NumberOfSqlInstances",
+                "count": "[parameters('SQLInstancesCount')]"
+            },
+            "tags": {
+                "displayName": "SQL_NIC[2]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters(concat('sql',copyIndex(),'PrivateIPAddress'))]",
+                            "subnet": {
+                                "id": "[parameters('sqlSubnetRef')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[parameters('sqlLBBackendPoolRef')]"
+                                },
+                                {
+                                    "id": "[parameters('sqlExternalLBBackendPoolRef')]"
+                                }
+                            ],
+                            "loadBalancerInboundNatRules": [
+                                {
+                                    "id": "[parameters(concat('sql',copyIndex(),'LBRDPNATRef'))]"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(parameters('sqlVMName'),'w-nic')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "tags": {
+                "displayName": "SQLWitness_NIC"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('sqlWitnessNicPrivateIPAddress')]",
+                            "subnet": {
+                                "id": "[parameters('sqlSubnetRef')]"
+                            },
+                            "loadBalancerInboundNatRules": [
+                                {
+                                    "id": "[parameters('sqlwLBRDPNATRef')]"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

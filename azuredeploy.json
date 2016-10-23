@@ -1,0 +1,1760 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "organizationName": {
+            "type": "string",
+            "metadata": {
+                "description": "The LOWERCASE short-name of the organization."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The admin username."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The admin password."
+            }
+        },
+        "domainName": {
+            "type": "string",
+            "metadata": {
+                "description": "Internal domain name of the organization."
+            }
+        },
+        "deploymentPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "The deployment prefix."
+            }
+        },
+        "SyncedDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "The database name that will be synchronized between the 2 SQL server instances"
+            }
+        },
+        "SQLStorageAccountTYpe": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "The storage account type for the SQL storage account."
+            },
+            "defaultValue": "Standard_LRS"
+        },
+        "commonStorageAccountType": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "The storage account type for the common storage account."
+            },
+            "defaultValue": "Standard_LRS"
+        },
+        "diagnosticsStorageAccountType": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "The storage account type for the diagnostics storage account."
+            },
+            "defaultValue": "Standard_LRS"
+        },
+        "fswStorageAccountType": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "The storage account type for the file share witness storage account."
+            },
+            "defaultValue": "Standard_LRS"
+        },
+        "DCVMSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS3",
+                "Standard_DS4",
+                "Standard_DS11",
+                "Standard_DS12",
+                "Standard_DS13",
+                "Standard_DS14",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS11_v2",
+                "Standard_DS12_v2",
+                "Standard_DS13_v2",
+                "Standard_DS14_v2",
+                "Standard_DS15_v2",
+                "Standard_GS1",
+                "Standard_GS2",
+                "Standard_GS3",
+                "Standard_GS4",
+                "Standard_GS4",
+                "Standard_GS5"
+            ],
+            "metadata": {
+                "description": "The VM Size for the DNS VM."
+            },
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "exchangeVMSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS3",
+                "Standard_DS4",
+                "Standard_DS11",
+                "Standard_DS12",
+                "Standard_DS13",
+                "Standard_DS14",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS11_v2",
+                "Standard_DS12_v2",
+                "Standard_DS13_v2",
+                "Standard_DS14_v2",
+                "Standard_DS15_v2",
+                "Standard_GS1",
+                "Standard_GS2",
+                "Standard_GS3",
+                "Standard_GS4",
+                "Standard_GS4",
+                "Standard_GS5"
+            ],
+            "metadata": {
+                "description": "The VM Size for the exchange VM."
+            },
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "CRMVMSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS3",
+                "Standard_DS4",
+                "Standard_DS11",
+                "Standard_DS12",
+                "Standard_DS13",
+                "Standard_DS14",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS11_v2",
+                "Standard_DS12_v2",
+                "Standard_DS13_v2",
+                "Standard_DS14_v2",
+                "Standard_DS15_v2",
+                "Standard_GS1",
+                "Standard_GS2",
+                "Standard_GS3",
+                "Standard_GS4",
+                "Standard_GS4",
+                "Standard_GS5"
+            ],
+            "metadata": {
+                "description": "The VM Size for the CRM VMs."
+            },
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "SQLVMSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS3",
+                "Standard_DS4",
+                "Standard_DS11",
+                "Standard_DS12",
+                "Standard_DS13",
+                "Standard_DS14",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS11_v2",
+                "Standard_DS12_v2",
+                "Standard_DS13_v2",
+                "Standard_DS14_v2",
+                "Standard_DS15_v2",
+                "Standard_GS1",
+                "Standard_GS2",
+                "Standard_GS3",
+                "Standard_GS4",
+                "Standard_GS4",
+                "Standard_GS5"
+            ],
+            "metadata": {
+                "description": "The VM Size for the SQL VMs."
+            },
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "SQLWitnessVMSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS3",
+                "Standard_DS4",
+                "Standard_DS11",
+                "Standard_DS12",
+                "Standard_DS13",
+                "Standard_DS14",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS11_v2",
+                "Standard_DS12_v2",
+                "Standard_DS13_v2",
+                "Standard_DS14_v2",
+                "Standard_DS15_v2",
+                "Standard_GS1",
+                "Standard_GS2",
+                "Standard_GS3",
+                "Standard_GS4",
+                "Standard_GS4",
+                "Standard_GS5"
+            ],
+            "metadata": {
+                "description": "The VM Size for the SQL Witness VM."
+            },
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "FSWVMSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS3",
+                "Standard_DS4",
+                "Standard_DS11",
+                "Standard_DS12",
+                "Standard_DS13",
+                "Standard_DS14",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_DS5_v2",
+                "Standard_DS11_v2",
+                "Standard_DS12_v2",
+                "Standard_DS13_v2",
+                "Standard_DS14_v2",
+                "Standard_DS15_v2",
+                "Standard_GS1",
+                "Standard_GS2",
+                "Standard_GS3",
+                "Standard_GS4",
+                "Standard_GS4",
+                "Standard_GS5"
+            ],
+            "metadata": {
+                "description": "The VM Size for the File Share Witness VM in SQL ALways On Cluster."
+            },
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "SQLServerVersion": {
+            "type": "string",
+            "allowedValues": [
+                "SQL2012SP3-WS2012R2",
+                "SQL2014SP1-WS2012R2",
+                "SQL2016-WS2012R2"
+            ],
+            "metadata": {
+                "description": "The Sql Server Version"
+            },
+            "defaultValue": "SQL2016-WS2012R2"
+        },
+        "SQLServerServiceAccountUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The sql server service account username. MUST be different from admin username."
+            },
+            "defaultValue": "sqlservice"
+        },
+        "sqlAuthUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The sql server authentication username. MUST be different from admin username and service username."
+            },
+            "defaultValue": "sqluser"
+        },
+        "templatesBaseURL": {
+            "type": "string",
+            "metadata": {
+                "description": "The base URL for the raw JSON Templates"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/nested"
+        },
+        "scriptsBaseURL": {
+            "type": "string",
+            "metadata": {
+                "description": "The base URL for the DSC Scripts"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/scripts"
+        },
+        "sqlServerAutoPatchingDay": {
+            "type": "string",
+            "allowedValues": [
+                "Never",
+                "Everyday",
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            "metadata": {
+                "description": "The day of a week for auto patching"
+            },
+            "defaultValue": "Sunday"
+        },
+        "sqlServerAutoPatchingStartHour": {
+            "type": "string",
+            "allowedValues": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "22",
+                "23"
+            ],
+            "metadata": {
+                "description": "The start hour of a day for auto patching"
+            },
+            "defaultValue": "2"
+        },
+        "workloadType": {
+            "type": "string",
+            "allowedValues": [
+                "GENERAL",
+                "OLTP",
+                "DW"
+            ],
+            "metadata": {
+                "description": "The Sql VM work load type: GENERAL - general work load; DW - datawear house work load; OLTP - Transactional processing work load"
+            },
+            "defaultValue": "GENERAL"
+        },
+        "sqlAOAGName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Sql AlwaysOn Group Name"
+            },
+            "defaultValue": "alwayson-ag"
+        },
+        "sqlAOListenerPort": {
+            "type": "string",
+            "metadata": {
+                "description": "The Sql AG Listener port"
+            },
+            "defaultValue": "1433"
+        },
+        "sqlAOListenerName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Sql AG Listener Name"
+            },
+            "defaultValue": "alwayson-ag-listener"
+        }
+    },
+    "variables": {
+        "deploymentPrefix": "[parameters('deploymentPrefix')]",
+        "location": "[resourceGroup().location]",
+        "uniqueString": "[uniqueString(resourceGroup().id)]",
+        "virtualNetworkName": "[concat(parameters('organizationName'),'-vnet')]",
+        "sqlAlwaysOnEndpointName": "[concat(parameters('deploymentPrefix'),'-hadr')]",
+        "sharePath": "[concat(parameters('deploymentPrefix'),'-fsw')]",
+        "clusterName": "[concat(parameters('deploymentPrefix'),'-fc')]",
+        "virtuaNetworkAddressRange": "10.0.0.0/16",
+        "Monday": true,
+        "Tuesday": true,
+        "Wednesday": true,
+        "Thursday": true,
+        "Friday": true,
+        "Saturday": true,
+        "Sunday": true,
+        "Never": false,
+        "Everyday": true,
+        "SQL2012SP2-WS2012R2": "Enterprise",
+        "SQL2012SP3-WS2012R2": "Enterprise",
+        "SQL2014-WS2012R2": "Enterprise",
+        "SQL2014SP1-WS2012R2": "Enterprise",
+        "SQL2016-WS2012R2": "Enterprise",
+        "subnetAddressRanges": {
+            "static": "10.0.0.0/24",
+            "sql": "10.0.1.0/26"
+        },
+        "privateIPs": {
+            "dc": "10.0.0.4",
+            "exchange": "10.0.0.5",
+            "crm0": "10.0.0.6",
+            "crm1": "10.0.0.7",
+            "crmBackend": "10.0.0.8",
+            "crmLoadBalancer": "10.0.0.9",
+            "sql0": "10.0.1.6",
+            "sql1": "10.0.1.7",
+            "sqlWitness": "10.0.1.8",
+            "sqlLoadBalancer": "10.0.1.9"
+        },
+        "storageAccountNames": {
+            "sql": "[substring(concat(parameters('organizationName'),'sql',variables('uniqueString')),0,20)]",
+            "common": "[substring(concat(parameters('organizationName'),'common',variables('uniqueString')),0,20)]",
+            "fsw": "[substring(concat(parameters('organizationName'),'fsw',variables('uniqueString')),0,20)]",
+            "diag": "[substring(concat(parameters('organizationName'),'diag',variables('uniqueString')),0,20)]"
+        },
+        "availabilitySetNames": {
+            "dcExchange": "DCExchangeAvailabilitySet",
+            "crm": "crmAvailabilitySet",
+            "sql": "sqlAvailabilitySet"
+        },
+        "subnetNames": {
+            "static": "staticSubnet",
+            "sql": "sqlSubnet"
+        },
+        "loadBalancerNames": {
+            "crm": "crmLoadBalancer",
+            "sqlInternal": "sqlInternalLoadBalancer",
+            "sqlExternal": "sqlExternalLoadBalancer"
+        },
+        "loadBalancerProbeNames": {
+            "sqlAlwaysOn": "sqlAlwaysOnProbe",
+            "http": "httpProbe"
+        },
+        "publicIPAddressNames": {
+            "dc": "dcPublicIP",
+            "exchange": "exchangePublicIP",
+            "crmBackend": "crmBackendPublicIP",
+            "crmLoadBalancer": "crmLBPublicIP",
+            "sqlLoadBalancer": "sqlLBPublicIP"
+        },
+        "publicDomainNames": {
+            "dc": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.dc)]",
+            "exchange": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.exchange)]",
+            "crm0": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'0-vm')]",
+            "crm1": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'1-vm')]",
+            "crmBackend": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'be-vm')]",
+            "sql0": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.sql,'0-vm')]",
+            "sql1": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.sql,'1-vm')]",
+            "sqlWitness": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.sql,'w-vm')]",
+            "sqlExternalLoadBalancer": "[concat(parameters('organizationName'),'-sql')]",
+            "crmLoadBalancer": "[concat(parameters('organizationName'),'-crm')]"
+        },
+        "vmSettings": {
+            "vmNames": {
+                "dc": "ad-dc",
+                "exchange": "exchange",
+                "crm": "crm",
+                "sql": "sql"
+            },
+            "vhdContainerName": "vhds",
+            "windowsImagePublisher": "MicrosoftWindowsServer",
+            "windowsImageOffer": "WindowsServer",
+            "windowsImageSKU": "2012-R2-Datacenter",
+            "sqlImagePublisher": "MicrosoftSQLServer",
+            "sqlImageOffer": "[parameters('SQLServerVersion')]",
+            "sqlImageSKU": "[variables(parameters('SQLServerVersion'))]",
+            "rdpPort": 3389,
+            "dcDataDiskSize": 128,
+            "exchangeDataDiskSize": 500,
+            "crmDataDiskSize": 500,
+            "sqlDiskSize": 1023,
+            "sqlWitnessDataDiskSize": 500,
+            "sqlVMDiskCount": 2
+        },
+        "nicNames": {
+            "dc": "[concat(variables('vmSettings').vmNames.dc,'-nic')]",
+            "exchange": "[concat(variables('vmSettings').vmNames.exchange,'-nic')]",
+            "crm0": "[concat(variables('vmSettings').vmNames.crm,'0-nic')]",
+            "crm1": "[concat(variables('vmSettings').vmNames.crm,'1-nic')]",
+            "crmBackend": "[concat(variables('vmSettings').vmNames.crm,'be-nic')]",
+            "sql0": "[concat(variables('vmSettings').vmNames.sql,'0-nic')]",
+            "sql1": "[concat(variables('vmSettings').vmNames.sql,'1-nic')]",
+            "sqlWitness": "[concat(variables('vmSettings').vmNames.sql,'w-nic')]"
+        },
+        "resourceIDs": {
+            "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+            "dcNicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').dc)]",
+            "exchangeNicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').exchange)]",
+            "crm0NicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').crm0)]",
+            "crm1NicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').crm1)]",
+            "crmBackendNicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').crmBackend)]",
+            "sql0NicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').sql0)]",
+            "sql1NicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').sql1)]",
+            "sqlWitnessNicID": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicNames').sqlWitness)]",
+            "crmLBID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerNames').crm)]",
+            "sqlInternalLBID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerNames').sqlInternal)]",
+            "sqlExternalLBID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerNames').sqlExternal)]",
+            "crmLBPubIPID": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNames').crmLoadBalancer)]",
+            "sqlLBPubIPID": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNames').sqlLoadBalancer)]",
+            "dcPubIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressNames').dc)]",
+            "exchangePubIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressNames').exchange)]",
+            "crmBackendPubIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressNames').crmBackend)]",
+            "dcExchangeAvSetID": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetNames').dcExchange)]",
+            "crmAvSetID": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetNames').crm)]",
+            "sqlAvSetID": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetNames').sql)]"
+        },
+        "RDPNATRuleNames": {
+            "crm0": "RDPCrm0",
+            "crm1": "RDPCrm1",
+            "sql0": "RDPSql0",
+            "sql1": "RDPSql1",
+            "sqlw": "RDPSqlWitness"
+        },
+        "nestedReferences": {
+            "dcNicIPConfig": "[concat(variables('resourceIDs').dcNicID,'/ipConfigurations/ipconfig1')]",
+            "crmLBFEIPConfig": "[concat(variables('resourceIDs').crmLBID,'/frontendIPConfigurations/frontendIPConfig1')]",
+            "sqlInternalLBFEIPConfig": "[concat(variables('resourceIDs').sqlInternalLBID,'/frontendIPConfigurations/frontendIPConfig1')]",
+            "sqlExternalLBFEIPConfig": "[concat(variables('resourceIDs').sqlExternalLBID,'/frontendIPConfigurations/frontendIPConfig1')]",
+            "crm0LBRDPNATRule": "[concat(variables('resourceIDs').crmLBID,'/inboundNatRules/',variables('RDPNATRuleNames').crm0)]",
+            "crm1LBRDPNATRule": "[concat(variables('resourceIDs').crmLBID,'/inboundNatRules/',variables('RDPNATRuleNames').crm1)]",
+            "sql0LBRDPNATRule": "[concat(variables('resourceIDs').sqlExternalLBID,'/inboundNatRules/',variables('RDPNATRuleNames').sql0)]",
+            "sql1LBRDPNATRule": "[concat(variables('resourceIDs').sqlExternalLBID,'/inboundNatRules/',variables('RDPNATRuleNames').sql1)]",
+            "sqlwLBRDPNATRule": "[concat(variables('resourceIDs').sqlExternalLBID,'/inboundNatRules/',variables('RDPNATRuleNames').sqlw)]",
+            "crmBEAddressPool": "[concat(variables('resourceIDs').crmLBID,'/backendAddressPools/addressPool1')]",
+            "sqlBEAddressPool": "[concat(variables('resourceIDs').sqlInternalLBID,'/backendAddressPools/addressPool1')]",
+            "sqlExternalBEAddressPool": "[concat(variables('resourceIDs').sqlExternalLBID,'/backendAddressPools/addressPool1')]",
+            "crmLBHTTPProbe": "[concat(variables('resourceIDs').crmLBID,'/probes/',variables('loadBalancerProbeNames').http)]",
+            "sqlLBAOProbe": "[concat(variables('resourceIDs').sqlInternalLBID,'/probes/',variables('loadBalancerProbeNames').sqlAlwaysOn)]",
+            "sqlExternalLBAOProbe": "[concat(variables('resourceIDs').sqlExternalLBID,'/probes/',variables('loadBalancerProbeNames').sqlAlwaysOn)]",
+            "staticSubnet": "[concat(variables('resourceIDs').vnetID,'/subnets/',variables('subnetNames').static)]",
+            "sqlSubnet": "[concat(variables('resourceIDs').vnetID,'/subnets/',variables('subnetNames').sql)]"
+        },
+        "configuration": {
+            "templateURLs": {
+                "storageAccountVnetPublicIPAvailabilitySet": "[concat(parameters('templatesBaseURL'),'/storageAccountVNetPubIPAvSet.json')]",
+                "loadBalancers": "[concat(parameters('templatesBaseURL'),'/loadBalancers.json')]",
+                "NICs": "[concat(parameters('templatesBaseURL'),'/NICs.json')]",
+                "provisioningVMs": "[concat(parameters('templatesBaseURL'),'/provisioningVMs.json')]",
+                "updateVnetDNStoDCVM": "[concat(parameters('templatesBaseURL'),'/updateVnetDNS.json')]",
+                "updateNICs": "[concat(parameters('templatesBaseURL'),'/updateNIC.json')]",
+                "preparingAlwaysOnSqlServer": "[concat(parameters('templatesBaseURL'),'/preparingAlwaysOnSqlServer.json')]",
+                "configuringAlwaysOn": "[concat(parameters('templatesBaseURL'),'/configuringAlwaysOn.json')]"
+            },
+            "modulesURLs": {
+                "dc": "[concat(parameters('scriptsBaseURL'),'/CreateADPDC.ps1.zip')]",
+                "fsw": "[concat(parameters('scriptsBaseURL'),'/CreateFileShareWitness.ps1.zip')]",
+                "sqlAO": "[concat(parameters('scriptsBaseURL'),'/PrepareAlwaysOnSqlServer.ps1.zip')]",
+                "cluster": "[concat(parameters('scriptsBaseURL'),'/CreateFailoverCluster.ps1.zip')]"
+            },
+            "configurationFunctions": {
+                "dc": "CreateADPDC.ps1\\CreateADPDC",
+                "fsw": "CreateFileShareWitness.ps1\\CreateFileShareWitness",
+                "sqlAO": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
+                "cluster": "CreateFailoverCluster.ps1\\CreateFailoverCluster"
+            }
+        },
+        "ports": {
+            "crmLoadBalancer": {
+                "crm0RDPFront": 33089,
+                "crm0RDPBack": 3389,
+                "crm1RDPFront": 33189,
+                "crm1RDPBack": 3389
+            },
+            "sqlLoadBalancer": {
+                "sql0RDPFront": 33089,
+                "sql0RDPBack": 3389,
+                "sql1RDPFront": 33189,
+                "sql1RDPBack": 3389,
+                "sqlwRDPFront": 33289,
+                "sqlwRDPBack": 3389
+            },
+            "sqlServer": 1433
+        },
+        "instanceCounts": {
+            "crmFront": 2,
+            "sql": 2
+        }
+    },
+    "resources": [
+        {
+            "name": "storageAccountVnetPublicIPAvSet",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment resource will create storage accounts for AD, SQL Server, File Share Witness, and Diagnostics. It will also create the virtual network, the public IP Addresses, and the Availability Sets",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.storageAccountVnetPublicIPAvailabilitySet]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "sqlStorageAccountName": {
+                        "value": "[variables('storageAccountNames').sql]"
+                    },
+                    "sqlStorageAccountType": {
+                        "value": "[parameters('SQLStorageAccountTYpe')]"
+                    },
+                    "commonStorageAccountName": {
+                        "value": "[variables('storageAccountNames').common]"
+                    },
+                    "commonStorageAccountType": {
+                        "value": "[parameters('commonStorageAccountType')]"
+                    },
+                    "fswStorageAccountName": {
+                        "value": "[variables('storageAccountNames').fsw]"
+                    },
+                    "fswStorageAccountType": {
+                        "value": "[parameters('fswStorageAccountType')]"
+                    },
+                    "diagStorageAccountName": {
+                        "value": "[variables('storageAccountNames').diag]"
+                    },
+                    "diagStorageAccountType": {
+                        "value": "[parameters('diagnosticsStorageAccountType')]"
+                    },
+                    "DCPubIPName": {
+                        "value": "[variables('publicIPAddressNames').dc]"
+                    },
+                    "DCPubIPDomainLabel": {
+                        "value": "[variables('publicDomainNames').dc]"
+                    },
+                    "exchangePubIPName": {
+                        "value": "[variables('publicIPAddressNames').exchange]"
+                    },
+                    "exchangePubIPDomainLabel": {
+                        "value": "[variables('publicDomainNames').exchange]"
+                    },
+                    "crmBackendPubIPName": {
+                        "value": "[variables('publicIPAddressNames').crmBackend]"
+                    },
+                    "crmBackendPubIPDomainLabel": {
+                        "value": "[variables('publicDomainNames').crmBackend]"
+                    },
+                    "crmLoadBalancerPubIPName": {
+                        "value": "[variables('publicIPAddressNames').crmLoadBalancer]"
+                    },
+                    "crmLoadBalancerPubIPDomainLabel": {
+                        "value": "[variables('publicDomainNames').crmLoadBalancer]"
+                    },
+                    "sqlLoadBalancerPubIPName": {
+                        "value": "[variables('publicIPAddressNames').sqlLoadBalancer]"
+                    },
+                    "sqlLoadBalancerPubIPDomainLabel": {
+                        "value": "[variables('publicDomainNames').sqlExternalLoadBalancer]"
+                    },
+                    "dcAvailabilitySetName": {
+                        "value": "[variables('availabilitySetNames').dcExchange]"
+                    },
+                    "crmAvailabilitySetName": {
+                        "value": "[variables('availabilitySetNames').crm]"
+                    },
+                    "sqlAvailabilitySetName": {
+                        "value": "[variables('availabilitySetNames').sql]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[variables('virtualNetworkName')]"
+                    },
+                    "virtualNetworkAddressRange": {
+                        "value": "[variables('virtuaNetworkAddressRange')]"
+                    },
+                    "staticSubnetName": {
+                        "value": "[variables('subnetNames').static]"
+                    },
+                    "staticSubnetPrefix": {
+                        "value": "[variables('subnetAddressRanges').static]"
+                    },
+                    "sqlSubnetName": {
+                        "value": "[variables('subnetNames').sql]"
+                    },
+                    "sqlSubnetPrefix": {
+                        "value": "[variables('subnetAddressRanges').sql]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "loadBalancers",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment resource will create the SQL and CRM Load Balancers.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/storageAccountVnetPublicIPAvSet"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.loadBalancers]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "staticSubnetRef": {
+                        "value": "[variables('nestedReferences').staticSubnet]"
+                    },
+                    "sqlSubnetRef": {
+                        "value": "[variables('nestedReferences').sqlSubnet]"
+                    },
+                    "crmLoadBalancerName": {
+                        "value": "[variables('loadBalancerNames').crm]"
+                    },
+                    "crmLoadBalancerPrivateIP": {
+                        "value": "[variables('privateIPs').crmLoadBalancer]"
+                    },
+                    "crmLoadBalancerPubIPRef": {
+                        "value": "[variables('resourceIDs').crmLBPubIPID]"
+                    },
+                    "crmLBBackendAddressPoolRef": {
+                        "value": "[variables('nestedReferences').crmBEAddressPool]"
+                    },
+                    "crmLBFrontendIPConfigRef": {
+                        "value": "[variables('nestedReferences').crmLBFEIPConfig]"
+                    },
+                    "crmHTTPProbeRef": {
+                        "value": "[variables('nestedReferences').crmLBHTTPProbe]"
+                    },
+                    "CRMHTTPProbeName": {
+                        "value": "[variables('loadBalancerProbeNames').http]"
+                    },
+                    "crm0LBRDPFrontPort": {
+                        "value": "[variables('ports').crmLoadBalancer.crm0RDPFront]"
+                    },
+                    "crm0LBRDPBackPort": {
+                        "value": "[variables('ports').crmLoadBalancer.crm0RDPBack]"
+                    },
+                    "crm1LBRDPFrontPort": {
+                        "value": "[variables('ports').crmLoadBalancer.crm1RDPFront]"
+                    },
+                    "crm1LBRDPBackPort": {
+                        "value": "[variables('ports').crmLoadBalancer.crm1RDPBack]"
+                    },
+                    "sqlExternalLoadBalancerName": {
+                        "value": "[variables('loadBalancerNames').sqlExternal]"
+                    },
+                    "sqlInternalLoadBalancerName": {
+                        "value": "[variables('loadBalancerNames').sqlInternal]"
+                    },
+                    "sqlLoadBalancerPrivateIP": {
+                        "value": "[variables('privateIPs').sqlLoadBalancer]"
+                    },
+                    "sqlLoadBalancerPubIPRef": {
+                        "value": "[variables('resourceIDs').sqlLBPubIPID]"
+                    },
+                    "sqlLBBackendAddressPoolRef": {
+                        "value": "[variables('nestedReferences').sqlBEAddressPool]"
+                    },
+                    "sqlInternalLBFrontendIPConfigRef": {
+                        "value": "[variables('nestedReferences').sqlInternalLBFEIPConfig]"
+                    },
+                    "sqlExternalLBFrontendIPConfigRef": {
+                        "value": "[variables('nestedReferences').sqlExternalLBFEIPConfig]"
+                    },
+                    "sqlExternalLBBackendAddressPoolRef": {
+                        "value": "[variables('nestedReferences').sqlExternalBEAddressPool]"
+                    },
+                    "sqlAOProbeRef": {
+                        "value": "[variables('nestedReferences').sqlLBAOProbe]"
+                    },
+                    "sqlExternalAOProbeRef": {
+                        "value": "[variables('nestedReferences').sqlExternalLBAOProbe]"
+                    },
+                    "sqlAOProbeName": {
+                        "value": "[variables('loadBalancerProbeNames').sqlAlwaysOn]"
+                    },
+                    "sql0LBRDPFrontPort": {
+                        "value": "[variables('ports').sqlLoadBalancer.sql0RDPFront]"
+                    },
+                    "sql0LBRDPBackPort": {
+                        "value": "[variables('ports').sqlLoadBalancer.sql0RDPBack]"
+                    },
+                    "sql1LBRDPFrontPort": {
+                        "value": "[variables('ports').sqlLoadBalancer.sql1RDPFront]"
+                    },
+                    "sql1LBRDPBackPort": {
+                        "value": "[variables('ports').sqlLoadBalancer.sql1RDPBack]"
+                    },
+                    "sqlwLBRDPFrontPort": {
+                        "value": "[variables('ports').sqlLoadBalancer.sqlwRDPFront]"
+                    },
+                    "sqlwLBRDPBackPort": {
+                        "value": "[variables('ports').sqlLoadBalancer.sqlwRDPBack]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "createNICs",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment creates the required NICs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/loadBalancers"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.NICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "DCNicName": {
+                        "value": "[variables('nicNames').dc]"
+                    },
+                    "DCNicPrivateIPAddress": {
+                        "value": "[variables('privateIPs').dc]"
+                    },
+                    "dcPubIPRef": {
+                        "value": "[variables('resourceIDs').dcPubIPID]"
+                    },
+                    "exchangeNicName": {
+                        "value": "[variables('nicNames').exchange]"
+                    },
+                    "exchangeNicPrivateIPAddress": {
+                        "value": "[variables('privateIPs').exchange]"
+                    },
+                    "exchangePubIPRef": {
+                        "value": "[variables('resourceIDs').exchangePubIPID]"
+                    },
+                    "crmVMName": {
+                        "value": "[variables('vmSettings').vmNames.crm]"
+                    },
+                    "staticSubnetRef": {
+                        "value": "[variables('nestedReferences').staticSubnet]"
+                    },
+                    "CRMFrontendInstancesCount": {
+                        "value": "[variables('instanceCounts').crmFront]"
+                    },
+                    "crm0PrivateIPAddress": {
+                        "value": "[variables('privateIPs').crm0]"
+                    },
+                    "crm1PrivateIPAddress": {
+                        "value": "[variables('privateIPs').crm1]"
+                    },
+                    "crmBackendNicPrivateIPAddress": {
+                        "value": "[variables('privateIPs').crmBackend]"
+                    },
+                    "crmBackendPubIPRef": {
+                        "value": "[variables('resourceIDs').crmBackendPubIPID]"
+                    },
+                    "crmLBBackendPoolRef": {
+                        "value": "[variables('nestedReferences').crmBEAddressPool]"
+                    },
+                    "crm0LBRDPNATRef": {
+                        "value": "[variables('nestedReferences').crm0LBRDPNATRule]"
+                    },
+                    "crm1LBRDPNATRef": {
+                        "value": "[variables('nestedReferences').crm1LBRDPNATRule]"
+                    },
+                    "sqlVMName": {
+                        "value": "[variables('vmSettings').vmNames.sql]"
+                    },
+                    "SQLInstancesCount": {
+                        "value": "[variables('instanceCounts').sql]"
+                    },
+                    "sql0PrivateIPAddress": {
+                        "value": "[variables('privateIPs').sql0]"
+                    },
+                    "sql1PrivateIPAddress": {
+                        "value": "[variables('privateIPs').sql1]"
+                    },
+                    "sqlWitnessNicPrivateIPAddress": {
+                        "value": "[variables('privateIPs').sqlWitness]"
+                    },
+                    "sqlLBBackendPoolRef": {
+                        "value": "[variables('nestedReferences').sqlBEAddressPool]"
+                    },
+                    "sqlExternalLBBackendPoolRef": {
+                        "value": "[variables('nestedReferences').sqlExternalBEAddressPool]"
+                    },
+                    "sql0LBRDPNATRef": {
+                        "value": "[variables('nestedReferences').sql0LBRDPNATRule]"
+                    },
+                    "sql1LBRDPNATRef": {
+                        "value": "[variables('nestedReferences').sql1LBRDPNATRule]"
+                    },
+                    "sqlwLBRDPNATRef": {
+                        "value": "[variables('nestedReferences').sqlwLBRDPNATRule]"
+                    },
+                    "sqlSubnetRef": {
+                        "value": "[variables('nestedReferences').sqlSubnet]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ProvisioningVMs",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/createNICs"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.provisioningVMs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "organizationDomainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "dcExchangeAvSetRef": {
+                        "value": "[variables('resourceIDs').dcExchangeAvSetID]"
+                    },
+                    "sqlAvSetRef": {
+                        "value": "[variables('resourceIDs').sqlAvSetID]"
+                    },
+                    "crmAvSetRef": {
+                        "value": "[variables('resourceIDs').crmAvSetID]"
+                    },
+                    "DCVMName": {
+                        "value": "[variables('vmSettings').vmNames.dc]"
+                    },
+                    "DCVMSize": {
+                        "value": "[parameters('DCVMSize')]"
+                    },
+                    "DCNicRef": {
+                        "value": "[variables('resourceIDs').dcNicID]"
+                    },
+                    "commonStorageAccountName": {
+                        "value": "[variables('storageAccountNames').common]"
+                    },
+                    "sqlStorageAccountName": {
+                        "value": "[variables('storageAccountNames').sql]"
+                    },
+                    "diagStorageAccountName": {
+                        "value": "[variables('storageAccountNames').diag]"
+                    },
+                    "vhdContainerName": {
+                        "value": "[variables('vmSettings').vhdContainerName]"
+                    },
+                    "DCDataDiskSize": {
+                        "value": "[variables('vmSettings').dcDataDiskSize]"
+                    },
+                    "windowsImageOffer": {
+                        "value": "[variables('vmSettings').windowsImageOffer]"
+                    },
+                    "windowsImagePublisher": {
+                        "value": "[variables('vmSettings').windowsImagePublisher]"
+                    },
+                    "windowsImageSKU": {
+                        "value": "[variables('vmSettings').windowsImageSKU]"
+                    },
+                    "sqlImageOffer": {
+                        "value": "[variables('vmSettings').sqlImageOffer]"
+                    },
+                    "sqlImagePublisher": {
+                        "value": "[variables('vmSettings').sqlImagePublisher]"
+                    },
+                    "sqlImageSKU": {
+                        "value": "[variables('vmSettings').sqlImageSKU]"
+                    },
+                    "dcModulesURL": {
+                        "value": "[variables('configuration').modulesURLs.dc]"
+                    },
+                    "dcConfigurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.dc]"
+                    },
+                    "exchangeVMName": {
+                        "value": "[variables('vmSettings').vmNames.exchange]"
+                    },
+                    "exchangeVMSize": {
+                        "value": "[parameters('exchangeVMSize')]"
+                    },
+                    "exchangeDataDiskSize": {
+                        "value": "[variables('vmSettings').exchangeDataDiskSize]"
+                    },
+                    "exchangeNicRef": {
+                        "value": "[variables('resourceIDs').exchangeNicID]"
+                    },
+                    "crmVMName": {
+                        "value": "[variables('vmSettings').vmNames.crm]"
+                    },
+                    "crmVMDataDiskSize": {
+                        "value": "[variables('vmSettings').crmDataDiskSize]"
+                    },
+                    "crmFrontendVMSize": {
+                        "value": "[parameters('CRMVMSize')]"
+                    },
+                    "crmBackendVMSize": {
+                        "value": "[parameters('CRMVMSize')]"
+                    },
+                    "crmBackendDataDiskSize": {
+                        "value": "[variables('vmSettings').crmDataDiskSize]"
+                    },
+                    "crmBackendNicRef": {
+                        "value": "[variables('resourceIDs').crmBackendNicID]"
+                    },
+                    "sqlWitnessVMSize": {
+                        "value": "[parameters('SQLWitnessVMSize')]"
+                    },
+                    "sqlWitnessDataDiskSize": {
+                        "value": "[variables('vmSettings').sqlWitnessDataDiskSize]"
+                    },
+                    "sqlWitnessNicRef": {
+                        "value": "[variables('resourceIDs').sqlWitnessNicID]"
+                    },
+                    "crm0NicRef": {
+                        "value": "[variables('resourceIDs').crm0NicID]"
+                    },
+                    "crm1NicRef": {
+                        "value": "[variables('resourceIDs').crm1NicID]"
+                    },
+                    "sqlVMName": {
+                        "value": "[variables('vmSettings').vmNames.sql]"
+                    },
+                    "sqlServerVMSize": {
+                        "value": "[parameters('SQLVMSize')]"
+                    },
+                    "sqlVMDataDiskSize": {
+                        "value": "[variables('vmSettings').sqlDiskSize]"
+                    },
+                    "sql0NicRef": {
+                        "value": "[variables('resourceIDs').sql0NicID]"
+                    },
+                    "sql1NicRef": {
+                        "value": "[variables('resourceIDs').sql1NicID]"
+                    },
+                    "sqlServerInstanceCount": {
+                        "value": "[variables('instanceCounts').sql]"
+                    },
+                    "crmFrontInstanceCount": {
+                        "value": "[variables('instanceCounts').crmFront]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateVnetDNS",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ProvisioningVMs"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateVnetDNStoDCVM]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "virtualNetworkName": {
+                        "value": "[variables('virtualNetworkName')]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "virtualNetworkAddressRange": {
+                        "value": "[variables('virtuaNetworkAddressRange')]"
+                    },
+                    "staticSubnetName": {
+                        "value": "[variables('subnetNames').static]"
+                    },
+                    "staticSubnetPrefix": {
+                        "value": "[variables('subnetAddressRanges').static]"
+                    },
+                    "sqlSubnetName": {
+                        "value": "[variables('subnetNames').sql]"
+                    },
+                    "sqlSubnetPrefix": {
+                        "value": "[variables('subnetAddressRanges').sql]"
+                    },
+                    "DCPrivateIPAddress": {
+                        "value": "[variables('privateIPs').dc]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateSQLWNic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateVnetDNS"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').sqlWitness]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').sqlWitness]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').sqlSubnet]"
+                                    },
+                                    "loadBalancerInboundNatRules": [
+                                        {
+                                            "id": "[variables('nestedReferences').sqlwLBRDPNATRule]"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateSQL0Nic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').sql0]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').sql0]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').sqlSubnet]"
+                                    },
+                                    "loadBalancerBackendAddressPools": [
+                                        {
+                                            "id": "[variables('nestedReferences').sqlBEAddressPool]"
+                                        },
+                                        {
+                                            "id": "[variables('nestedReferences').sqlExternalBEAddressPool]"
+                                        }
+                                    ],
+                                    "loadBalancerInboundNatRules": [
+                                        {
+                                            "id": "[variables('nestedReferences').sql0LBRDPNATRule]"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateSQL1Nic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').sql1]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').sql1]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').sqlSubnet]"
+                                    },
+                                    "loadBalancerBackendAddressPools": [
+                                        {
+                                            "id": "[variables('nestedReferences').sqlBEAddressPool]"
+                                        },
+                                        {
+                                            "id": "[variables('nestedReferences').sqlExternalBEAddressPool]"
+                                        }
+                                    ],
+                                    "loadBalancerInboundNatRules": [
+                                        {
+                                            "id": "[variables('nestedReferences').sql1LBRDPNATRule]"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateCRM0Nic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').crm0]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').crm0]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').staticSubnet]"
+                                    },
+                                    "loadBalancerBackendAddressPools": [
+                                        {
+                                            "id": "[variables('nestedReferences').crmBEAddressPool]"
+                                        }
+                                    ],
+                                    "loadBalancerInboundNatRules": [
+                                        {
+                                            "id": "[variables('nestedReferences').crm0LBRDPNATRule]"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateCRM1Nic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').crm1]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').crm1]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').staticSubnet]"
+                                    },
+                                    "loadBalancerBackendAddressPools": [
+                                        {
+                                            "id": "[variables('nestedReferences').crmBEAddressPool]"
+                                        }
+                                    ],
+                                    "loadBalancerInboundNatRules": [
+                                        {
+                                            "id": "[variables('nestedReferences').crm1LBRDPNATRule]"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateCRMBackendNic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').crmBackend]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').crmBackend]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').staticSubnet]"
+                                    },
+                                    "publicIPAddress": {
+                                        "id": "[variables('resourceIDs').crmBackendPubIPID]"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "UpdateExchangeNic",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.updateNICs]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[variables('nicNames').exchange]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "ipConfigurations": {
+                        "value": [
+                            {
+                                "name": "ipconfig1",
+                                "properties": {
+                                    "privateIPAllocationMethod": "Static",
+                                    "privateIPAddress": "[variables('privateIPs').exchange]",
+                                    "subnet": {
+                                        "id": "[variables('nestedReferences').staticSubnet]"
+                                    },
+                                    "publicIPAddress": {
+                                        "id": "[variables('resourceIDs').exchangePubIPID]"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "dnsServers": {
+                        "value": [
+                            "[variables('privateIPs').dc]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "PrepareAlwaysOnSqlServer",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQLWNic",
+                "Microsoft.Resources/deployments/UpdateSQL0Nic",
+                "Microsoft.Resources/deployments/UpdateSQL1Nic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.preparingAlwaysOnSqlServer]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "sqlVMName": {
+                        "value": "[variables('vmSettings').vmNames.sql]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "fswModulesURL": {
+                        "value": "[variables('configuration').modulesURLs.fsw]"
+                    },
+                    "fswConfigFunction": {
+                        "value": "[variables('configuration').configurationFunctions.fsw]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "sharePath": {
+                        "value": "[variables('sharePath')]"
+                    },
+                    "autoPatchingEnable": {
+                        "value": "[variables(parameters('sqlServerAutoPatchingDay'))]"
+                    },
+                    "autoPatchingDay": {
+                        "value": "[parameters('sqlServerAutoPatchingDay')]"
+                    },
+                    "autoPatchingStartHour": {
+                        "value": "[parameters('sqlServerAutoPatchingStartHour')]"
+                    },
+                    "sqlAOPrepareModulesURL": {
+                        "value": "[variables('configuration').modulesURLs.sqlAO]"
+                    },
+                    "sqlAOPrepareConfigurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.sqlAO]"
+                    },
+                    "sqlAOEPName": {
+                        "value": "[variables('sqlAlwaysOnEndpointName')]"
+                    },
+                    "sqlServerServiceAccountUserName": {
+                        "value": "[parameters('SQLServerServiceAccountUsername')]"
+                    },
+                    "sqlServerServiceAccountPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "numberOfDisks": {
+                        "value": "[variables('vmSettings').sqlVMDiskCount]"
+                    },
+                    "workloadType": {
+                        "value": "[parameters('workloadType')]"
+                    }
+                }
+            }
+            
+        },
+        {
+            "name": "ConfigureAlwaysOn",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment provisions the VMs.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/PrepareAlwaysOnSqlServer"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.configuringAlwaysOn]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "sqlVMName": {
+                        "value": "[variables('vmSettings').vmNames.sql]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    },
+                    "createClusterModulesURL": {
+                        "value": "[variables('configuration').modulesURLs.cluster]"
+                    },
+                    "createClusterConfigurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.cluster]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "clusterName": {
+                        "value": "[variables('clusterName')]"
+                    },
+                    "sharePath": {
+                        "value": "[variables('sharePath')]"
+                    },
+                    "sqlAOEPName": {
+                        "value": "[variables('sqlAlwaysOnEndpointName')]"
+                    },
+                    "sqlAOAGName": {
+                        "value": "[parameters('sqlAOAGName')]"
+                    },
+                    "sqlAOListenerName": {
+                        "value": "[parameters('sqlAOListenerName')]"
+                    },
+                    "sqlAOListenerPort": {
+                        "value": "[parameters('sqlAOListenerPort')]"
+                    },
+                    "sqlLBName": {
+                        "value": "[variables('loadBalancerNames').sqlInternal]"
+                    },
+                    "sqlLBIPAddress": {
+                        "value": "[variables('privateIPs').sqlLoadBalancer]"
+                    },
+                    "adPDCVMName": {
+                        "value": "[variables('vmSettings').vmNames.dc]"
+                    },
+                    "adminUserName": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "sqlServerServiceAccountUserName": {
+                        "value": "[parameters('SQLServerServiceAccountUsername')]"
+                    },
+                    "sqlServerServiceAccountPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "numberOfDisks": {
+                        "value": "[variables('vmSettings').sqlVMDiskCount]"
+                    },
+                    "workloadType": {
+                        "value": "[parameters('workloadType')]"
+                    },
+                    "syncedDatabaseName": {
+                        "value": "[parameters('SyncedDatabaseName')]"
+                    },
+                    "sqlAuthUsername": {
+                        "value": "[parameters('sqlAuthUsername')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

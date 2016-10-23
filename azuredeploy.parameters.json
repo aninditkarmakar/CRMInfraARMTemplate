@@ -1,0 +1,39 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "organizationName": {
+            "value": "myorg"
+        },
+        "adminUsername": {
+            "value": "myadmin"
+        },
+        "adminPassword": {
+            "value": "Hello%%12345"
+        },
+        "domainName": {
+            "value": "myorg.local"
+        },
+        "deploymentPrefix": {
+            "value": "aodns"
+        },
+        "SQLServerServiceAccountUsername": {
+            "value": "sqlservice"
+        },
+        "sqlAuthUsername": {
+            "value": "sqluser"
+        },
+        "SyncedDatabaseName": {
+            "value": "SyncedDB"
+        },
+        "SQLServerVersion": {
+            "value": "SQL2016-WS2012R2"
+        },
+        "templatesBaseURL": {
+            "value": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/nested"
+        },
+        "scriptsBaseURL": {
+            "value": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/scripts"
+        }
+    }
+}

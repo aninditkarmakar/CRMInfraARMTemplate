@@ -1,0 +1,71 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworkName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string"
+        },
+        "staticSubnetName": {
+            "type": "string"
+        },
+        "staticSubnetPrefix": {
+            "type": "string"
+        },
+        "sqlSubnetName": {
+            "type": "string"
+        },
+        "sqlSubnetPrefix": {
+            "type": "string"
+        },
+        "DCPrivateIPAddress": {
+            "type": "string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "Virtual Network"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('staticSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('staticSubnetPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('sqlSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('sqlSubnetPrefix')]"
+                        }
+                    }
+                ],
+                "dhcpOptions": {
+                    "dnsServers": [
+                        "[parameters('DCPrivateIPAddress')]"
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

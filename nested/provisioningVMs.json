@@ -1,0 +1,575 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "organizationDomainName": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "dcExchangeAvSetRef": {
+            "type": "string"
+        },
+        "sqlAvSetRef": {
+            "type": "string"
+        },
+        "crmAvSetRef": {
+            "type": "string"
+        },
+        "DCVMName": {
+            "type": "string"
+        },
+        "DCVMSize": {
+            "type": "string"
+        },
+        "DCNicRef": {
+            "type": "string"
+        },
+        "commonStorageAccountName": {
+            "type": "string"
+        },
+        "sqlStorageAccountName": {
+            "type": "string"
+        },
+        "diagStorageAccountName": {
+            "type": "string"
+        },
+        "vhdContainerName": {
+            "type": "string"
+        },
+        "DCDataDiskSize": {
+            "type": "int"
+        },
+        "windowsImageOffer": {
+            "type": "string"
+        },
+        "windowsImagePublisher": {
+            "type": "string"
+        },
+        "windowsImageSKU": {
+            "type": "string"
+        },
+        "sqlImageOffer": {
+            "type": "string"
+        },
+        "sqlImagePublisher": {
+            "type": "string"
+        },
+        "sqlImageSKU": {
+            "type": "string"
+        },
+        "dcModulesURL": {
+            "type": "string"
+        },
+        "dcConfigurationFunction": {
+            "type": "string"
+        },
+        "exchangeVMName": {
+            "type": "string"
+        },
+        "exchangeVMSize": {
+            "type": "string"
+        },
+        "exchangeDataDiskSize": {
+            "type": "int"
+        },
+        "exchangeNicRef": {
+            "type": "string"
+        },
+        "crmVMName": {
+            "type": "string"
+        },
+        "crmVMDataDiskSize": {
+            "type": "int"
+        },
+        "crmFrontendVMSize": {
+            "type": "string"
+        },
+        "crmBackendVMSize": {
+            "type": "string"
+        },
+        "crmBackendDataDiskSize": {
+            "type": "int"
+        },
+        "crmBackendNicRef": {
+            "type": "string"
+        },
+        "sqlWitnessVMSize": {
+            "type": "string"
+        },
+        "sqlWitnessDataDiskSize": {
+            "type": "int"
+        },
+        "sqlWitnessNicRef": {
+            "type": "string"
+        },
+        "crm0NicRef": {
+            "type": "string"
+        },
+        "crm1NicRef": {
+            "type": "string"
+        },
+        "sqlVMName": {
+            "type": "string"
+        },
+        "sqlServerVMSize": {
+            "type": "string"
+        },
+        "sqlVMDataDiskSize": {
+            "type": "int"
+        },
+        "sql0NicRef": {
+            "type": "string"
+        },
+        "sql1NicRef": {
+            "type": "string"
+        },
+        "sqlServerInstanceCount": {
+            "type": "int"
+        },
+        "crmFrontInstanceCount": {
+            "type": "int"
+        }
+    },
+    "variables": {
+        "crmBackendVMName": "[concat(parameters('crmVMName'),'be')]",
+        "sqlWitnessVmName": "[concat(parameters('sqlVMName'),'w')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('DCVMName'),'-vm')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "DC VM"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('DCVMSize')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('DCNicRef')]"
+                        }
+                    ]
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "name": "[concat(parameters('DCVMName'),'-osdisk')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',parameters('DCVMName'),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',parameters('DCVMName'),'-data-1.vhd')]"
+                            },
+                            "createOption": "Empty",
+                            "name": "[concat(parameters('DCVMName'),'-data-disk1')]",
+                            "lun": 0,
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('DCDataDiskSize')]"
+                        }
+                    ],
+                    "imageReference": {
+                        "offer": "[parameters('windowsImageOffer')]",
+                        "publisher": "[parameters('windowsImagePublisher')]",
+                        "sku": "[parameters('windowsImageSKU')]",
+                        "version": "latest"
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[parameters('dcExchangeAvSetRef')]"
+                },
+                "osProfile": {
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "computerName": "[parameters('DCVMName')]"
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+                    }
+                }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2016-03-30",
+                    "type": "extensions",
+                    "name": "InstallDomainController",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('DCVMName'),'-vm'))]"
+                    ],
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.19",
+                        "autoUpgradeMinorVersion": false,
+                        "protectedSettings": {
+                            "items": {
+                                "adminPassword": "[parameters('adminPassword')]"
+                            }
+                        },
+                        "settings": {
+                            "modulesUrl": "[parameters('dcModulesURL')]",
+                            "configurationFunction": "[parameters('dcConfigurationFunction')]",
+                            "properties": {
+                                "domainName": "[parameters('organizationDomainName')]",
+                                "adminCreds": {
+                                    "userName": "[parameters('adminUsername')]",
+                                    "password": "PrivateSettingsRef:adminPassword"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('exchangeVMName'),'-vm')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "Exchange VM"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('exchangeVMSize')]"
+                },
+                "availabilitySet": {
+                    "id": "[parameters('dcExchangeAvSetRef')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('exchangeVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('windowsImagePublisher')]",
+                        "offer": "[parameters('windowsImageOffer')]",
+                        "sku": "[parameters('windowsImageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',parameters('exchangeVMName'),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/', parameters('exchangeVMName'),'data-1.vhd')]"
+                            },
+                            "name": "[concat(parameters('exchangeVMName'),'-data-disk1')]",
+                            "createOption": "Empty",
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('exchangeDataDiskSize')]",
+                            "lun": 0
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('exchangeNicRef')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "true",
+                        "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(variables('crmBackendVMName'),'-vm')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "CRM Backend VM"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('crmBackendVMSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('crmBackendVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('windowsImagePublisher')]",
+                        "offer": "[parameters('windowsImageOffer')]",
+                        "sku": "[parameters('windowsImageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',variables('crmBackendVMName'),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/', variables('crmBackendVMName'),'data-1.vhd')]"
+                            },
+                            "name": "[concat(variables('crmBackendVMName'),'-data-disk1')]",
+                            "createOption": "Empty",
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('crmBackendDataDiskSize')]",
+                            "lun": 0
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('crmBackendNicRef')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "true",
+                        "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(variables('sqlWitnessVMName'),'-vm')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "SQL Witness VM"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('sqlWitnessVMSize')]"
+                },
+                "availabilitySet": {
+                    "id": "[parameters('sqlAvSetRef')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('sqlWitnessVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('windowsImagePublisher')]",
+                        "offer": "[parameters('windowsImageOffer')]",
+                        "sku": "[parameters('windowsImageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',variables('sqlWitnessVMName'),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/', variables('sqlWitnessVMName'),'data-1.vhd')]"
+                            },
+                            "name": "[concat(variables('sqlWitnessVMName'),'-data-disk1')]",
+                            "createOption": "Empty",
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('sqlWitnessDataDiskSize')]",
+                            "lun": 0
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('sqlWitnessNicRef')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "true",
+                        "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('crmVMName'),copyIndex(),'-vm')]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "NoOfCrmFrontInstances",
+                "count": "[parameters('crmFrontInstanceCount')]"
+            },
+            "tags": {
+                "displayName": "CRM Frontend VMs[2]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('crmFrontendVMSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('crmVMName'),copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "availabilitySet": {
+                    "id": "[parameters('crmAvSetRef')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('windowsImagePublisher')]",
+                        "offer": "[parameters('windowsImageOffer')]",
+                        "sku": "[parameters('windowsImageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',concat(parameters('crmVMName'),copyIndex()),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('commonStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/', concat(parameters('crmVMName'),copyIndex()),'data-1.vhd')]"
+                            },
+                            "name": "[concat(parameters('crmVMName'),copyIndex(),'-data-disk1')]",
+                            "createOption": "Empty",
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('crmVMDataDiskSize')]",
+                            "lun": 0
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters(concat('crm',copyIndex(),'NicRef'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "true",
+                        "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('sqlVMName'),copyIndex(),'-vm')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "SQL Server VMs[2]"
+            },
+            "copy": {
+                "name": "NoOfSqlServerInstances",
+                "count": "[parameters('sqlServerInstanceCount')]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('sqlServerVMSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('sqlVMName'),copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "availabilitySet": {
+                    "id": "[parameters('sqlAvSetRef')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('sqlImagePublisher')]",
+                        "offer": "[parameters('sqlImageOffer')]",
+                        "sku": "[parameters('sqlImageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',parameters('sqlStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/',concat(parameters('sqlVMName'),copyIndex()),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('sqlStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/', concat(parameters('sqlVMName'),copyIndex()),'data-1.vhd')]"
+                            },
+                            "name": "[concat(parameters('sqlVMName'),copyIndex(),'-data-disk1')]",
+                            "createOption": "Empty",
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('sqlVMDataDiskSize')]",
+                            "lun": 0
+                        },
+                        {
+                            "vhd": {
+                                "uri": "[concat('http://',parameters('sqlStorageAccountName'),'.blob.core.windows.net/',parameters('vhdContainerName'),'/', concat(parameters('sqlVMName'),copyIndex()),'data-2.vhd')]"
+                            },
+                            "name": "[concat(parameters('sqlVMName'),copyIndex(),'-data-disk2')]",
+                            "createOption": "Empty",
+                            "caching": "None",
+                            "diskSizeGB": "[parameters('sqlVMDataDiskSize')]",
+                            "lun": 1
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters(concat('sql',copyIndex(),'NicRef'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "true",
+                        "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

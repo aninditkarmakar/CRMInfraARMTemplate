@@ -1,0 +1,285 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "sqlStorageAccountName": {
+            "type": "string"
+        },
+        "sqlStorageAccountType": {
+            "type": "string"
+        },
+        "commonStorageAccountName": {
+            "type": "string"
+        },
+        "commonStorageAccountType": {
+            "type": "string"
+        },
+        "fswStorageAccountName": {
+            "type": "string"
+        },
+        "fswStorageAccountType": {
+            "type": "string"
+        },
+        "diagStorageAccountName": {
+            "type": "string"
+        },
+        "diagStorageAccountType": {
+            "type": "string"
+        },
+        "DCPubIPName": {
+            "type": "string"
+        },
+        "DCPubIPDomainLabel": {
+            "type": "string"
+        },
+        "exchangePubIPName": {
+            "type": "string"
+        },
+        "exchangePubIPDomainLabel": {
+            "type": "string"
+        },
+        "crmBackendPubIPName": {
+            "type": "string"
+        },
+        "crmBackendPubIPDomainLabel": {
+            "type": "string"
+        },
+        "crmLoadBalancerPubIPName": {
+            "type": "string"
+        },
+        "crmLoadBalancerPubIPDomainLabel": {
+            "type": "string"
+        },
+        "sqlLoadBalancerPubIPName": {
+            "type": "string"
+        },
+        "sqlLoadBalancerPubIPDomainLabel": {
+            "type": "string"
+        },
+        "dcAvailabilitySetName": {
+            "type": "string"
+        },
+        "crmAvailabilitySetName": {
+            "type": "string"
+        },
+        "sqlAvailabilitySetName": {
+            "type": "string"
+        },
+        "virtualNetworkName": {
+            "type": "string"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string"
+        },
+        "staticSubnetName": {
+            "type": "string"
+        },
+        "staticSubnetPrefix": {
+            "type": "string"
+        },
+        "sqlSubnetName": {
+            "type": "string"
+        },
+        "sqlSubnetPrefix": {
+            "type": "string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "name": "[parameters('sqlStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "tags": {
+                "displayName": "sqlStorageAccount"
+            },
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "properties": {
+                "accountType": "[parameters('sqlStorageAccountType')]"
+            }
+        },
+        {
+            "name": "[parameters('commonStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "tags": {
+                "displayName": "commonStorageAccount"
+            },
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "properties": {
+                "accountType": "[parameters('commonStorageAccountType')]"
+            }
+        },
+        {
+            "name": "[parameters('fswStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "tags": {
+                "displayName": "fswStorageAccount"
+            },
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "properties": {
+                "accountType": "[parameters('fswStorageAccountType')]"
+            }
+        },
+        {
+            "name": "[parameters('diagStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "tags": {
+                "displayName": "diagStorageAccount"
+            },
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "properties": {
+                "accountType": "[parameters('diagStorageAccountType')]"
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('DCPubIPName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "DCPublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('DCPubIPDomainLabel')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('exchangePubIPName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "exchangePublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('exchangePubIPDomainLabel')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('crmBackendPubIPName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "crmBackendPublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('crmBackendPubIPDomainLabel')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('crmLoadBalancerPubIPName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "crmLoadBalancerPublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('crmLoadBalancerPubIPDomainLabel')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('sqlLoadBalancerPubIPName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "sqlExternalLoadBalancerPublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('sqlLoadBalancerPubIPDomainLabel')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('dcAvailabilitySetName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "dcAvailabilitySet"
+            },
+            "properties": {
+                "platformUpdateDomainCount": 2,
+                "platformFaultDomainCount": 2
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('crmAvailabilitySetName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "crmAvailabilitySet"
+            },
+            "properties": {
+                "platformUpdateDomainCount": 2,
+                "platformFaultDomainCount": 2
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('sqlAvailabilitySetName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "sqlAvailabilitySet"
+            },
+            "properties": {
+                "platformUpdateDomainCount": 3,
+                "platformFaultDomainCount": 3
+            }
+        },
+        {
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('staticSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('staticSubnetPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('sqlSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('sqlSubnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

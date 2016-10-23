@@ -1,0 +1,93 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlVMName": { "type": "string" },
+        "location": { "type": "string" },
+        "createClusterModulesURL": { "type": "string" },
+        "createClusterConfigurationFunction": { "type": "string" },
+        "domainName": { "type": "string" },
+        "clusterName": { "type": "string" },
+        "sharePath": { "type": "string" },
+        "sqlAOEPName": { "type": "string" },
+        "sqlAOAGName": { "type": "string" },
+        "sqlAOListenerName": { "type": "string" },
+        "sqlAOListenerPort": { "type": "string" },
+        "sqlLBName": { "type": "string" },
+        "sqlLBIPAddress": { "type": "string" },
+        "adPDCVMName": { "type": "string" },
+        "adminUserName": { "type": "string" },
+        "adminPassword": { "type": "securestring" },
+        "sqlServerServiceAccountUserName": { "type": "string" },
+        "sqlServerServiceAccountPassword": { "type": "securestring" },
+        "numberOfDisks": { "type": "int" },
+        "workloadType": { "type": "string" },
+        "syncedDatabaseName": {
+            "type": "string"
+        },
+        "sqlAuthUsername": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "sql1VMName": "[concat(parameters('sqlVMName'),'1-vm')]",
+        "sql0VMName": "[concat(parameters('sqlVMName'),'0-vm')]",
+        "sqlWitnessVMName": "[concat(parameters('sqlVMName'),'w-vm')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('sql1VMName'),'/configuringAlwaysOn')]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": false,
+                "settings": {
+                    "modulesURL": "[parameters('createClusterModulesURL')]",
+                    "configurationFunction": "[parameters('createClusterConfigurationFunction')]",
+                    "properties": {
+                        "domainName": "[parameters('domainName')]",
+                        "clusterName": "[parameters('clusterName')]",
+                        "sharePath": "[concat('\\\\',parameters('sqlVMName'),'w','\\',parameters('sharePath'))]",
+                        "nodes": [ "[concat(parameters('sqlVMName'),'0')]", "[concat(parameters('sqlVMName'),'1')]" ],
+                        "sqlAlwaysOnEndpointName": "[parameters('sqlAOEPName')]",
+                        "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAOAGName')]",
+                        "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAOListenerName')]",
+                        "SqlAlwaysOnAvailabilityGroupListenerPort": "[parameters('sqlAOListenerPort')]",
+                        "databaseNames": "[parameters('syncedDatabaseName')]",
+                        "lbName": "[parameters('sqlLBName')]",
+                        "lbAddress": "[parameters('sqlLBIPAddress')]",
+                        "primaryReplica": "[concat(parameters('sqlVMName'),'1')]",
+                        "secondaryReplica": "[concat(parameters('sqlVMName'),'0')]",
+                        "dnsServerName": "[parameters('adPDCVMName')]",
+                        "adminCreds": {
+                            "userName": "[parameters('adminUserName')]",
+                            "password": "privateSettingsRef:adminPassword"
+                        },
+                        "sqlServiceCreds": {
+                            "userName": "[parameters('sqlServerServiceAccountUserName')]",
+                            "password": "PrivateSettingsRef:sqlServerServiceAccountPassword"
+                        },
+                        "SQLAuthCreds": {
+                            "userName": "[parameters('sqlAuthUsername')]",
+                            "password": "PrivateSettingsRef:sqlAuthPassword"
+                        },
+                        "NumberOfDisks": "[parameters('numberOfDisks')]",
+                        "WorkloadType": "[parameters('workloadType')]"
+                    }
+                },
+                "protectedSettings": {
+                    "items": {
+                        "adminPassword": "[parameters('adminPassword')]",
+                        "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]",
+                        "sqlAuthPassword": "[parameters('sqlServerServiceAccountPassword')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,337 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "staticSubnetRef": {
+            "type": "string"
+        },
+        "sqlSubnetRef": {
+            "type": "string"
+        },
+        "crmLoadBalancerName": {
+            "type": "string"
+        },
+        "crmLoadBalancerPrivateIP": {
+            "type": "string"
+        },
+        "crmLoadBalancerPubIPRef": {
+            "type": "string"
+        },
+        "crmLBBackendAddressPoolRef": {
+            "type": "string"
+        },
+        "crmLBFrontendIPConfigRef": {
+            "type": "string"
+        },
+        "crmHTTPProbeRef": {
+            "type": "string"
+        },
+        "CRMHTTPProbeName": {
+            "type": "string"
+        },
+        "crm0LBRDPFrontPort": {
+            "type": "int"
+        },
+        "crm0LBRDPBackPort": {
+            "type": "int"
+        },
+        "crm1LBRDPFrontPort": {
+            "type": "int"
+        },
+        "crm1LBRDPBackPort": {
+            "type": "int"
+        },
+        "sqlExternalLoadBalancerName": {
+            "type": "string"
+        },
+        "sqlInternalLoadBalancerName": {
+            "type": "string"
+        },
+        "sqlLoadBalancerPrivateIP": {
+            "type": "string"
+        },
+        "sqlLoadBalancerPubIPRef": {
+            "type": "string"
+        },
+        "sqlLBBackendAddressPoolRef": {
+            "type": "string"
+        },
+        "sqlInternalLBFrontendIPConfigRef": {
+            "type": "string"
+        },
+        "sqlExternalLBFrontendIPConfigRef": {
+            "type": "string"
+        },
+        "sqlExternalLBBackendAddressPoolRef": {
+            "type": "string"
+        },
+        "sqlAOProbeRef": {
+            "type": "string"
+        },
+        "sqlExternalAOProbeRef": {
+            "type": "string"
+        },
+        "sqlAOProbeName": {
+            "type": "string"
+        },
+        "sql0LBRDPFrontPort": {
+            "type": "int"
+        },
+        "sql0LBRDPBackPort": {
+            "type": "int"
+        },
+        "sql1LBRDPFrontPort": {
+            "type": "int"
+        },
+        "sql1LBRDPBackPort": {
+            "type": "int"
+        },
+        "sqlwLBRDPFrontPort": {
+            "type": "int"
+        },
+        "sqlwLBRDPBackPort": {
+            "type": "int"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-06-15",
+            "name": "[parameters('crmLoadBalancerName')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "crmLoadBalancer"
+            },
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "frontendIPConfig1",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[parameters('crmLoadBalancerPubIPRef')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "addressPool1"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "HTTPEndPointListener",
+                        "properties": {
+                            "backendAddressPool": {
+                                "id": "[parameters('crmLBBackendAddressPoolRef')]"
+                            },
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('crmLBFrontendIPConfigRef')]"
+                            },
+                            "probe": {
+                                "id": "[parameters('crmHTTPProbeRef')]"
+                            },
+                            "protocol": "Tcp",
+                            "frontendPort": 80,
+                            "backendPort": 80,
+                            "enableFloatingIP": true
+                        }
+                    }
+                ],
+                "inboundNatRules": [
+                    {
+                        "name": "RDPCrm0",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('crmLBFrontendIPConfigRef')]"
+                            },
+                            "frontendPort": "[parameters('crm0LBRDPFrontPort')]",
+                            "backendPort": "[parameters('crm0LBRDPBackPort')]",
+                            "protocol": "tcp"
+                        }
+                    },
+                    {
+                        "name": "RDPCrm1",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('crmLBFrontendIPConfigRef')]"
+                            },
+                            "frontendPort": "[parameters('crm1LBRDPFrontPort')]",
+                            "backendPort": "[parameters('crm1LBRDPBackPort')]",
+                            "protocol": "tcp"
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "[parameters('CRMHTTPProbeName')]",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 80,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "name": "[parameters('sqlInternalLoadBalancerName')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "sqlInternalLoadBalancer"
+            },
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "frontendIPConfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('sqlLoadBalancerPrivateIP')]",
+                            "subnet": {
+                                "id": "[parameters('sqlSubnetRef')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "addressPool1"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "SqlAlwaysOnEndPointListener",
+                        "properties": {
+                            "backendAddressPool": {
+                                "id": "[parameters('sqlLBBackendAddressPoolRef')]"
+                            },
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('sqlInternalLBFrontendIPConfigRef')]"
+                            },
+                            "probe": {
+                                "id": "[parameters('sqlAOProbeRef')]"
+                            },
+                            "protocol": "Tcp",
+                            "frontendPort": 1433,
+                            "backendPort": 1433,
+                            "enableFloatingIP": true
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "[parameters('sqlAOProbeName')]",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 59999,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "name": "[parameters('sqlExternalLoadBalancerName')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "sqlExternalLoadBalancer"
+            },
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "frontendIPConfig1",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[parameters('sqlLoadBalancerPubIPRef')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "addressPool1"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "SqlAlwaysOnEndPointListener",
+                        "properties": {
+                            "backendAddressPool": {
+                                "id": "[parameters('sqlExternalLBBackendAddressPoolRef')]"
+                            },
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('sqlExternalLBFrontendIPConfigRef')]"
+                            },
+                            "probe": {
+                                "id": "[parameters('sqlExternalAOProbeRef')]"
+                            },
+                            "protocol": "Tcp",
+                            "frontendPort": 1433,
+                            "backendPort": 1433,
+                            "enableFloatingIP": true
+                        }
+                    }
+                ],
+                "inboundNatRules": [
+                    {
+                        "name": "RDPSql0",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('sqlExternalLBFrontendIPConfigRef')]"
+                            },
+                            "frontendPort": "[parameters('sql0LBRDPFrontPort')]",
+                            "backendPort": "[parameters('sql0LBRDPBackPort')]",
+                            "protocol": "tcp"
+                        }
+                    },
+                    {
+                        "name": "RDPSql1",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('sqlExternalLBFrontendIPConfigRef')]"
+                            },
+                            "frontendPort": "[parameters('sql1LBRDPFrontPort')]",
+                            "backendPort": "[parameters('sql1LBRDPBackPort')]",
+                            "protocol": "tcp"
+                        }
+                    },
+                    {
+                        "name": "RDPSqlWitness",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('sqlExternalLBFrontendIPConfigRef')]"
+                            },
+                            "frontendPort": "[parameters('sqlwLBRDPFrontPort')]",
+                            "backendPort": "[parameters('sqlwLBRDPBackPort')]",
+                            "protocol": "tcp"
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "[parameters('sqlAOProbeName')]",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 59999,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
