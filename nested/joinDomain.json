@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VMName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the VM to attach the extension to."
+            }
+        },
+        "modulesURL": {
+            "type": "string",
+            "metadata": {
+                "description": "URL for the module."
+            }
+        },
+        "configurationFunction": {
+            "type": "string",
+            "metadata": {
+                "description": "Configuration function to call."
+            }
+        },
+        "domainName": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN of the domain to join."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin username"
+            }
+        },
+        "adminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin password"
+            }
+        }
+    },
+    "variables": {
+        
+    },
+    "resources": [
+       {
+           "type": "Microsoft.Compute/virtualMachines/extensions",
+           "name": "[concat(parameters('VMName'),'/joinDomain')]",
+           "apiVersion": "2015-06-15",
+           "location": "[resourceGroup().location]",
+           "tags": {
+               "displayName": "VM/JoinDomain"
+           },
+           "properties": {
+               "publisher": "Microsoft.Powershell",
+               "type": "DSC",
+               "typeHandlerVersion": "2.9",
+               "autoUpgradeMinorVersion": true,
+               "settings": {
+                   "modulesUrl": "[parameters('modulesURL')]",
+                   "configurationFunction": "[parameters('configurationFunction')]",
+                   "properties": {
+                       "DomainName": "[parameters('domainName')]",
+                       "Admincreds": {
+                           "userName": "[parameters('adminUsername')]",
+                           "password": "PrivateSettingsRef:adminPassword"
+                       }
+                   }
+               },
+               "protectedSettings": {
+                   "items": {
+                       "adminPassword": "[parameters('adminPassword')]"
+                   }
+               }
+           }
+       } 
+    ],
+    "outputs": {
+        
+    }
+}

@@ -28,12 +28,6 @@
         },
         "SQLServerVersion": {
             "value": "SQL2016-WS2012R2"
-        },
-        "templatesBaseURL": {
-            "value": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/nested"
-        },
-        "scriptsBaseURL": {
-            "value": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/scripts"
         }
     }
 }

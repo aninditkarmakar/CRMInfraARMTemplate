@@ -427,14 +427,14 @@
             "metadata": {
                 "description": "The base URL for the raw JSON Templates"
             },
-            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/nested"
+            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMInfraARMTemplate/master/nested"
         },
         "scriptsBaseURL": {
             "type": "string",
             "metadata": {
                 "description": "The base URL for the DSC Scripts"
             },
-            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMAzureInfra/master/ARMTemplates/Templates/scripts"
+            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMInfraARMTemplate/master/scripts"
         },
         "sqlServerAutoPatchingDay": {
             "type": "string",
@@ -692,19 +692,22 @@
                 "updateVnetDNStoDCVM": "[concat(parameters('templatesBaseURL'),'/updateVnetDNS.json')]",
                 "updateNICs": "[concat(parameters('templatesBaseURL'),'/updateNIC.json')]",
                 "preparingAlwaysOnSqlServer": "[concat(parameters('templatesBaseURL'),'/preparingAlwaysOnSqlServer.json')]",
-                "configuringAlwaysOn": "[concat(parameters('templatesBaseURL'),'/configuringAlwaysOn.json')]"
+                "configuringAlwaysOn": "[concat(parameters('templatesBaseURL'),'/configuringAlwaysOn.json')]",
+                "joinDomain": "[concat(parameters('templatesBaseURL'),'/joinDomain.json')]"
             },
             "modulesURLs": {
                 "dc": "[concat(parameters('scriptsBaseURL'),'/CreateADPDC.ps1.zip')]",
                 "fsw": "[concat(parameters('scriptsBaseURL'),'/CreateFileShareWitness.ps1.zip')]",
                 "sqlAO": "[concat(parameters('scriptsBaseURL'),'/PrepareAlwaysOnSqlServer.ps1.zip')]",
-                "cluster": "[concat(parameters('scriptsBaseURL'),'/CreateFailoverCluster.ps1.zip')]"
+                "cluster": "[concat(parameters('scriptsBaseURL'),'/CreateFailoverCluster.ps1.zip')]",
+                "joinDomain": "[concat(parameters('scriptsBaseURL'),'/JoinDomain.ps1.zip')]"
             },
             "configurationFunctions": {
                 "dc": "CreateADPDC.ps1\\CreateADPDC",
                 "fsw": "CreateFileShareWitness.ps1\\CreateFileShareWitness",
                 "sqlAO": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
-                "cluster": "CreateFailoverCluster.ps1\\CreateFailoverCluster"
+                "cluster": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
+                "joinDomain": "JoinDomain.ps1\\JoinDomain"
             }
         },
         "ports": {
@@ -1342,6 +1345,42 @@
             }
         },
         {
+            "name": "SQL0JoinDomain",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment makes the SQL0 VM join the domain.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQL0Nic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.joinDomain]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VMName": {
+                        "value": "[concat(variables('vmSettings').vmNames.sql,'0-vm')]"
+                    },
+                    "modulesURL": {
+                        "value": "[variables('configuration').modulesURLs.joinDomain]"
+                    },
+                    "configurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "UpdateSQL1Nic",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
@@ -1393,6 +1432,42 @@
                         "value": [
                             "[variables('privateIPs').dc]"
                         ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "SQL1JoinDomain",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment makes the SQL1 VM join the domain.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateSQL1Nic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.joinDomain]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VMName": {
+                        "value": "[concat(variables('vmSettings').vmNames.sql,'1-vm')]"
+                    },
+                    "modulesURL": {
+                        "value": "[variables('configuration').modulesURLs.joinDomain]"
+                    },
+                    "configurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
                     }
                 }
             }
@@ -1451,6 +1526,42 @@
             }
         },
         {
+            "name": "CRM0JoinDomain",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment makes the CRM0 VM join the domain.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateCRM0Nic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.joinDomain]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VMName": {
+                        "value": "[concat(variables('vmSettings').vmNames.crm,'0-vm')]"
+                    },
+                    "modulesURL": {
+                        "value": "[variables('configuration').modulesURLs.joinDomain]"
+                    },
+                    "configurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "UpdateCRM1Nic",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
@@ -1504,6 +1615,42 @@
             }
         },
         {
+            "name": "CRM1JoinDomain",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment makes the CRM1 VM join the domain.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateCRM1Nic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.joinDomain]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VMName": {
+                        "value": "[concat(variables('vmSettings').vmNames.crm,'1-vm')]"
+                    },
+                    "modulesURL": {
+                        "value": "[variables('configuration').modulesURLs.joinDomain]"
+                    },
+                    "configurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "UpdateCRMBackendNic",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
@@ -1550,6 +1697,42 @@
             }
         },
         {
+            "name": "CRMBackendJoinDomain",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment makes the CRM Backend VM join the domain.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateCRMBackendNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.joinDomain]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VMName": {
+                        "value": "[concat(variables('vmSettings').vmNames.crm,'be-vm')]"
+                    },
+                    "modulesURL": {
+                        "value": "[variables('configuration').modulesURLs.joinDomain]"
+                    },
+                    "configurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "UpdateExchangeNic",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
@@ -1591,6 +1774,42 @@
                         "value": [
                             "[variables('privateIPs').dc]"
                         ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "ExchangeJoinDomain",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "comments": "This deployment makes the ExchangeVM join the domain.",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/UpdateExchangeNic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('configuration').templateURLs.joinDomain]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VMName": {
+                        "value": "[concat(variables('vmSettings').vmNames.exchange,'-vm')]"
+                    },
+                    "modulesURL": {
+                        "value": "[variables('configuration').modulesURLs.joinDomain]"
+                    },
+                    "configurationFunction": {
+                        "value": "[variables('configuration').configurationFunctions.joinDomain]"
+                    },
+                    "domainName": {
+                        "value": "[parameters('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
                     }
                 }
             }
