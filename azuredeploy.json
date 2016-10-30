@@ -427,14 +427,14 @@
             "metadata": {
                 "description": "The base URL for the raw JSON Templates"
             },
-            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMInfraARMTemplate/master/nested"
+            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMInfraARMTemplate/adfsfeature/nested"
         },
         "scriptsBaseURL": {
             "type": "string",
             "metadata": {
                 "description": "The base URL for the DSC Scripts"
             },
-            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMInfraARMTemplate/master/scripts"
+            "defaultValue": "https://raw.githubusercontent.com/aninditkarmakar/CRMInfraARMTemplate/adfsfeature/scripts"
         },
         "sqlServerAutoPatchingDay": {
             "type": "string",
