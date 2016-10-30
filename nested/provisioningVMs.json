@@ -321,9 +321,9 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[parameters('windowsImagePublisher')]",
-                        "offer": "[parameters('windowsImageOffer')]",
-                        "sku": "[parameters('windowsImageSKU')]",
+                        "publisher": "[parameters('sqlImagePublisher')]",
+                        "offer": "[parameters('sqlImageOffer')]",
+                        "sku": "[parameters('sqlImageSKU')]",
                         "version": "latest"
                     },
                     "osDisk": {
@@ -451,9 +451,9 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[parameters('windowsImagePublisher')]",
-                        "offer": "[parameters('windowsImageOffer')]",
-                        "sku": "[parameters('windowsImageSKU')]",
+                        "publisher": "[parameters('sqlImagePublisher')]",
+                        "offer": "[parameters('sqlImageOffer')]",
+                        "sku": "[parameters('sqlImageSKU')]",
                         "version": "latest"
                     },
                     "osDisk": {

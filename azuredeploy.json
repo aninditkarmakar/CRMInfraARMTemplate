@@ -596,7 +596,7 @@
             "exchange": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.exchange)]",
             "crm0": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'0-vm')]",
             "crm1": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'1-vm')]",
-            "crmBackend": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'be-vm')]",
+            "crmBackend": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.crm,'be')]",
             "sql0": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.sql,'0-vm')]",
             "sql1": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.sql,'1-vm')]",
             "sqlWitness": "[concat(parameters('organizationName'),'-',variables('vmSettings').vmNames.sql,'w-vm')]",
