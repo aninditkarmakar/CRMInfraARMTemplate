@@ -697,6 +697,7 @@
             },
             "modulesURLs": {
                 "dc": "[concat(parameters('scriptsBaseURL'),'/CreateADPDC.ps1.zip')]",
+                "ad": "[concat(parameters('scriptsBaseURL'),'/ActiveDirectory.ps1.zip')]",
                 "fsw": "[concat(parameters('scriptsBaseURL'),'/CreateFileShareWitness.ps1.zip')]",
                 "sqlAO": "[concat(parameters('scriptsBaseURL'),'/PrepareAlwaysOnSqlServer.ps1.zip')]",
                 "cluster": "[concat(parameters('scriptsBaseURL'),'/CreateFailoverCluster.ps1.zip')]",
@@ -704,6 +705,7 @@
             },
             "configurationFunctions": {
                 "dc": "CreateADPDC.ps1\\CreateADPDC",
+                "ad": "ActiveDirectory.ps1\\ActiveDirectory",
                 "fsw": "CreateFileShareWitness.ps1\\CreateFileShareWitness",
                 "sqlAO": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
                 "cluster": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
@@ -1124,10 +1126,10 @@
                         "value": "[variables('vmSettings').sqlImageSKU]"
                     },
                     "dcModulesURL": {
-                        "value": "[variables('configuration').modulesURLs.dc]"
+                        "value": "[variables('configuration').modulesURLs.ad]"
                     },
                     "dcConfigurationFunction": {
-                        "value": "[variables('configuration').configurationFunctions.dc]"
+                        "value": "[variables('configuration').configurationFunctions.ad]"
                     },
                     "exchangeVMName": {
                         "value": "[variables('vmSettings').vmNames.exchange]"
